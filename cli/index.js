@@ -129,7 +129,7 @@ async function generateJiraIssues (project, issues) {
         project: {id: args.jiraProjectId},
         issuetype: {id: args.jiraIssueTypeId},
         summary: `${project.name} - ${issue.title} in ${issue.package}`,
-        description: markdown2confluence(issue.description),
+        description: markdown2confluence(issue.description ?? issue.url),
       },
     },
     json: true,
