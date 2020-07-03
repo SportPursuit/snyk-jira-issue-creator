@@ -75,7 +75,7 @@ async function createIssues () {
 
   const project = projects.projects.find(project => project.id === args.projectId);
 
-  const issues = projectIssues.issues.vulnerabilities.concat(projectIssues.issues.licenses).filter(issue => {
+  let issues = projectIssues.issues.vulnerabilities.concat(projectIssues.issues.licenses).filter(issue => {
     if (!includeExisting && existingJiraIssues[issue.id]) {
       return false;
     }
@@ -86,6 +86,8 @@ async function createIssues () {
     console.log(chalk.green('No issues to create'));
     return process.exit(0);
   }
+
+  issues = removeDuplicates(issues, 'id');
 
   if (autoGenerate) {
     console.log(chalk.grey(`Auto-generating Jira issues for ${issues.length} issue${issues.length > 1 ? 's' : ''}`));
@@ -147,6 +149,12 @@ async function generateJiraIssues (project, issues) {
         console.log(`  ${args.jiraUrl}/browse/${jiraIssue.key}`);
       });
     });
+  });
+}
+
+function removeDuplicates(myArr, prop) {
+  return myArr.filter((obj, pos, arr) => {
+    return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
   });
 }
 
